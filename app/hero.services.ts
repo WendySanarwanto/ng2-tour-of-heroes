@@ -1,29 +1,28 @@
 import { Injectable } from '@angular/core';
+import { Headers, Http } from '@angular/http';
 import { Hero } from './hero';
+
+import 'rxjs/add/operator/toPromise';
 
 @Injectable()
 export class HeroService {
-    constructor() { }
+    private _heroesUrl = 'app/heroes';
+    constructor(private _http: Http) { }
+
+    /** Handle api call's error */
+    private handleError(error: any): Promise<any>{
+        console.error('An error occured.', error); // for demo purpose only
+        return Promise.reject(error);
+    }
 
     /** Return a list of heroes */
     getHeroes(): Promise<Hero[]> {        
-        return new Promise((resolve, reject)=>{
-            let heroes: Hero[] = [
-                { id: 11, name: 'Mr. Nice' },
-                { id: 12, name: 'Narco' },
-                { id: 13, name: 'Bombasto' },
-                { id: 14, name: 'Celeritas' },
-                { id: 15, name: 'Magneta' },
-                { id: 16, name: 'RubberMan' },
-                { id: 17, name: 'Dynama' },
-                { id: 18, name: 'Dr IQ' },
-                { id: 19, name: 'Magma' },
-                { id: 20, name: 'Tornado' }];
-    
-            resolve(heroes);            
-        });
+        return this._http.get(this._heroesUrl)
+                    .toPromise()
+                    .then(response=>response.json().data as Hero[])
+                    .catch(this.handleError);
     }
-
+    
     /** Get hero by id */
     getHero(id: number){
         return this.getHeroes().then(heroes=>heroes.find(hero=>hero.id === id));
