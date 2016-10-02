@@ -23,4 +23,9 @@ export class HeroService {
             resolve(heroes);            
         });
     }
+
+    /** Get hero by id */
+    getHero(id: number){
+        return this.getHeroes().then(heroes=>heroes.find(hero=>hero.id === id));
+    }
 }
